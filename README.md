@@ -3,7 +3,7 @@
 ### General Goals
 1) Learn new features of React (Hooks, Effects, Context API) and feel more confident putting them into practice
 2) Have a foundational knowledge of testing
-3) Be able to explain the difference between different types of testing (Static, Unit, Integration, Snapshot, etc)
+3) Be able to explain the difference between various types of testing (Static, Unit, Integration, Snapshot, etc)
 4) Be more confident in more Advanced JavaScript concepts
 
 ### Specific Course Goals
