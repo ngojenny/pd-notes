@@ -20,7 +20,125 @@
 * *VS-Code trick* you quickly move a component to a new file, by highlighting the block of code, click on the light bulb that appears and clicking move to new file
 
 ## JSX
+* allows us to write HTML markup, instead of creating our elements using `React.createElement()`
+* When you have JSX, you need to import react, because under the hood JSX transpire to `React.createElement()`
+* `npm install -D babel-eslint eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react` in “Configuring ESLint for React”
+* Expressions (anything on the right side of an assignment) needs to be wrapped in curly braces in JSX
+
 ## Hooks
+* Looked specifically at the `useState`  hook. 
+* Functions that let us interact with the React state and lifecycle features
+* Since components re-render every time it changes, these hooks shouldn’t be doing too much - they should focus on rendering (e.g. shouldn’t update functions, shouldn’t have too many side effects)
+* they all start with `use`
+* example:
+```js
+import/React,{useState}/from/"react";
+
+constSearchParams = () => {
+  ///useStatecreatesahookreturnsanarrayoftwothings/
+  ///(whichwe'vedestructured)/
+  ///-firstisthecurrentstate,secondisanupdater/
+  const [location,setLocation] = useState("Seattle,WA");
+
+  return (
+    <div className="search-params">
+    <form>
+      <label htmlFor="location">
+        <input 
+        id="location"
+        value={location}
+        placeholder="Location"
+        onChange={ e => setLocation(e.target.value) } />
+      </label>
+      <button>Submit</button>
+    </form>
+  </div>
+  );
+};
+
+export default SearchParams;
+
+
+```
+* should not stick hooks in if statements, for loops, conditional, any unpredictable logic
+* React keeps track of your pieces of state based on the order you call them
+### Custom Hooks
+* Creating custom hooks allows you to extract component logic into reusable functions
+* Example of dropdown logic extracted into a custom hook:
+
+```js
+// Custom Hook (reusable dropdown)
+import React, { useState } from "react";
+
+const useDropdown = (label, defaultState, options) => {
+  const [state, setState] = useState(defaultState);
+  const id = `use-dropdown-${label.replace(" ", "").toLowerCase()}`;
+  const Dropdown = () => (
+    <label htmlFor={id}>
+      {label}
+      <select
+        id={id}
+        value={state}
+        onChange={e => setState(e.target.value)}
+        onBlur={e => setState(e.target.value)}
+        disabled={options.length === 0}
+      >
+        <option>All</option>
+        {options.map(item => (
+          <option key={item} value={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+  return [state, Dropdown, setState];
+};
+
+export default useDropdown;
+
+```
+
+This is how it is referenced, via `<AnimalDropdown />` and `<BreedDropdown />` :
+
+```js
+// parent component of the instances of useDropdown hook
+import React, { useState } from "react";
+import { ANIMALS } from "@frontendmasters/pet";
+import useDropdown from "./useDropdown";
+
+const SearchParams = () => {
+  // useState creates a hook returns an array of two things
+  // (which we've destructured)
+  // - first is the current state, second is an updater
+  const [location, setLocation] = useState("Seattle, WA");
+  const [breeds, setBreeds] = useState([]);
+  const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
+  const [breed, BreedDropdown] = useDropdown("Breed", "", breeds);
+
+  return (
+    <div className="search-params">
+      <form>
+        <label htmlFor="location">
+          <input
+            id="location"
+            value={location}
+            placeholder="Location"
+            onChange={e => setLocation(e.target.value)}
+          />
+        </label>
+        <AnimalDropdown />
+        <BreedDropdown />
+        <button>Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default SearchParams;
+
+```
+
 ## Effects
 ## Dev Tools
 ## Async & Routing
