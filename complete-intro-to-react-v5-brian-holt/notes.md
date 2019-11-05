@@ -153,6 +153,54 @@ export default SearchParams;
 ```
 
 ## Effects
+* replaces many of the lifecycle methods
+* Example of `useEffect`. In this example, we only want to make a call to the Pet API when the `animal` state changes:
+```js
+const SearchParams = () => {
+  const [location, setLocation] = useState("Seattle, WA");
+  const [breeds, setBreeds] = useState([]);
+  const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
+  const [breed, BreedDropdown, setBreed] = useDropdown("Breed", "", breeds);
+
+  // useEffect initially runs AFTER the first render
+  // seems similar to componentDidMount
+  // second argument is an array of "dependencies"
+  // useEffect will only run if one of these 3 things change,
+  // without this, useEffect will constantly run (runs after each render by default)
+  useEffect(() => {
+    // we want to reset the breed and breeds state when it runs
+    // *note about setBreed and setBreeds being part of the dependency array
+    // including these two methods means useEffect will run if they get re-assigned
+    // it's unlikely that they will be reassigned, however this is what the creators
+    // of react wants us to do - if you do not include them, you will get an eslint react hook error/warning
+    setBreeds([]);
+    setBreed("");
+
+    pet.breeds(animal).then(({ breeds }) => {
+      const breedStrings = breeds.map(({ name }) => name);
+      setBreeds(breedStrings);
+    }, console.error);
+  }, [animal, setBreed, setBreeds]);
+  return (
+    <div className="search-params">
+      <form>
+        <label htmlFor="location">
+          <input
+            id="location"
+            value={location}
+            placeholder="Location"
+            onChange={e => setLocation(e.target.value)}
+          />
+        </label>
+        <AnimalDropdown />
+        <BreedDropdown />
+        <button>Submit</button>
+      </form>
+    </div>
+  );
+};
+```
+
 ## Dev Tools
 ## Async & Routing
 ## Class Components
