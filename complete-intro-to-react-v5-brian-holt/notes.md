@@ -154,6 +154,8 @@ export default SearchParams;
 
 ## Effects
 * replaces many of the lifecycle methods
+* method that takes in a callback and an array of dependencies
+* if you only want it run once, leave the array of dependencies empty
 * Example of `useEffect`. In this example, we only want to make a call to the Pet API when the `animal` state changes:
 ```js
 const SearchParams = () => {
@@ -163,7 +165,6 @@ const SearchParams = () => {
   const [breed, BreedDropdown, setBreed] = useDropdown("Breed", "", breeds);
 
   // useEffect initially runs AFTER the first render
-  // seems similar to componentDidMount
   // second argument is an array of "dependencies"
   // useEffect will only run if one of these 3 things change,
   // without this, useEffect will constantly run (runs after each render by default)
