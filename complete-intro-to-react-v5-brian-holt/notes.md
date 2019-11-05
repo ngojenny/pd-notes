@@ -32,32 +32,41 @@
 * they all start with `use`
 * example:
 ```js
-import/React,{useState}/from/"react";
+// useDropdown.js
+import React, { useState } from "react";
 
-constSearchParams = () => {
-  ///useStatecreatesahookreturnsanarrayoftwothings/
-  ///(whichwe'vedestructured)/
-  ///-firstisthecurrentstate,secondisanupdater/
-  const [location,setLocation] = useState("Seattle,WA");
-
-  return (
-    <div className="search-params">
-    <form>
-      <label htmlFor="location">
-        <input 
-        id="location"
-        value={location}
-        placeholder="Location"
-        onChange={ e => setLocation(e.target.value) } />
-      </label>
-      <button>Submit</button>
-    </form>
-  </div>
+// takes 3 arg a label, the default state and options (e.g. array of animals for the dropdown list)
+const useDropdown = (label, defaultState, options) => {
+  // initial state, defined by defaultState arg, generic updater
+  const [state, setState] = useState(defaultState);
+  // massage the label
+  const id = `use-dropdown-${label.replace(" ", "").toLowerCase()}`;
+  // return the jsx
+  const Dropdown = () => (
+    <label htmlFor={id}>
+      {label}
+      <select
+        id={id}
+        value={state}
+        onChange={e => setState(e.target.value)}
+        onBlur={e => setState(e.target.value)}
+        disabled={options.length === 0}
+      >
+        <option>All</option>
+        {options.map(item => (
+          <option key={item} value={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+    </label>
   );
+  // useDropdown returns an array of 3 things
+  // state, the jsx/component, the updater (just in case)
+  return [state, Dropdown, setState];
 };
 
-export default SearchParams;
-
+export default useDropdown;
 
 ```
 * should not stick hooks in if statements, for loops, conditional, any unpredictable logic
@@ -65,7 +74,6 @@ export default SearchParams;
 ### Custom Hooks
 * Creating custom hooks allows you to extract component logic into reusable functions
 * Example of dropdown logic extracted into a custom hook:
-
 ```js
 // Custom Hook (reusable dropdown)
 import React, { useState } from "react";
@@ -102,9 +110,11 @@ export default useDropdown;
 This is how it is referenced, via `<AnimalDropdown />` and `<BreedDropdown />` :
 
 ```js
-// parent component of the instances of useDropdown hook
+// SearchParams.js
+// parent component of instance of useDropdown hook
 import React, { useState } from "react";
 import { ANIMALS } from "@frontendmasters/pet";
+// import custom hook
 import useDropdown from "./useDropdown";
 
 const SearchParams = () => {
@@ -113,6 +123,9 @@ const SearchParams = () => {
   // - first is the current state, second is an updater
   const [location, setLocation] = useState("Seattle, WA");
   const [breeds, setBreeds] = useState([]);
+  // Leftside of statement - useDropdown returns:
+  // [state, Dropdown (component), setState]
+  // Rightside of statement - passing label, defaultState and options
   const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
   const [breed, BreedDropdown] = useDropdown("Breed", "", breeds);
 
