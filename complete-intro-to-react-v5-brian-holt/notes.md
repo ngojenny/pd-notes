@@ -203,8 +203,88 @@ const SearchParams = () => {
 ```
 
 ## Dev Tools
+### `NODE_ENV=development` vs `NODE_ENV=production`
+* if using parcel, it sets it for us
+* important to set your env variables appropriately because when developing we want all debugging tools ( e.g. warnings, messages), when our project is in production - we want a stripped down version to improved performance
+### Strict Mode
+* goes over `<React.StrictMode></React.StrictMode>` 
+* when wrapped in this, react will give you additional warnings on deprecated react things
+
 ## Async & Routing
+* Brian provides fallback API so you can work without internet or if the API used, has issues - see _Using the Fallback Mock API_
+### Async
+* See async example. In this example we want to get the pets that match the dropdown values and set our pets state with the matching lets pets:
+```js
+// in <SearchParams />
+// async function will return a promise
+// allows for await keyword to be used inside func
+// will wait until the data is return, from their destructure animals off obj
+async function requestPets() {
+  const { animals } = await pet.animals({
+    location,
+    breed,
+    type: animal
+  });
+
+  setPets(animals || []);
+}
+```
+
+### Routing
+* Uses Reach Router instead of React Router
+* Reach Router is more accessible than React Router. React Router will rely more on devs to make it accessible
+* See: [React Training: The Future of React Router and @reach/router](https://reacttraining.com/blog/reach-react-router-future/). For other reasons why you would choose Reach Router and vice versa.
+
 ## Class Components
+* goes over class components
+* shows how to configure babel to support classProperties e.g. (`state = {loading: true}`)
+* introduces `static getDerivedStateFromProps` and uses it to massage media props (sets a default and update the child component’s photos state with large photos from media prop). See:
+
+```js
+import React from "react";
+
+class Carousel extends React.Component {
+  state = {
+    photos: [],
+    active: 0
+  };
+
+  static getDerivedStateFromProps({ media }) {
+    let photos = ["http://placecorgi.com/600/500"];
+    if (media.length) {
+      photos = media.map(({ large }) => large);
+    }
+
+    return { photos };
+  }
+
+  render() {
+    const { photos, active } = this.state;
+
+    return (
+      <div className="carousel">
+        <img src={photos[active]} alt="animal" />
+        <div className="carousel-smaller">
+          {photos.map((photo, index) => (
+            // eslint-disable-next-line
+            <img
+              key={photo}
+              onClick={this.handleIndexClick}
+              data-index={index}
+              src={photo}
+              className={index === active ? "active" : ""}
+              alt="animal thumbnail"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Carousel;
+
+```
 ## Error Boundaries
 ## Context
 ## Portals
