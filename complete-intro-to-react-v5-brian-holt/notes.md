@@ -309,7 +309,6 @@ export default Carousel;
 
 ```
 ## Error Boundaries
-* Cannot do error boundaries with hooks, must use class components
 * Prevents entire UI from crashing when there is an error. It’s able to catch JavaScript errors in child component, log the error and display feedback to user.
 * See [Error Boundaries – React](https://reactjs.org/docs/error-boundaries.html#introducing-error-boundaries)
 * Example:
@@ -320,6 +319,9 @@ import { Link, Redirect } from "@reach/router";
 
 class ErrorBoundary extends Component {
   state = { hasError: false, redirect: false };
+
+  // like a lifecycle method, will get called when there's an error
+  // since it gets called - we know there was an error and set hasError to true
   static getDerivedStateFromError() {
     return { hasError: true };
   }
@@ -352,6 +354,7 @@ class ErrorBoundary extends Component {
 export default ErrorBoundary;
 
 ```
+* Cannot do error boundaries with hooks, must use class components (there is hook way of `static getDerivedStateFromError()`)
 * In the example below we want to wrap Details in the error boundary in case there’s an error coming from the API. We can’t just wrap everything in `<ErrorBoundary></ErrorBoundary>` because it can only catch the error in child components, but not within the class itself. To fix this, he turns `<ErrorBoundary></ErrorBoundary>` into a higher order component above details. Not sure if this is the best way? See the way it is exported at the bottom:
 ```js
 // Details.js

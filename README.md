@@ -1,6 +1,7 @@
 # Goals and Curriculum
 ## Goals
 ### General Goals
+*November 1, 2019*
 1) Learn new features of React (Hooks, Effects, Context API) and feel more confident putting them into practice
 2) Have a foundational knowledge of testing
 3) Be able to explain the difference between various types of testing (Static, Unit, Integration, Snapshot, etc)
