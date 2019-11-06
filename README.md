@@ -13,7 +13,14 @@
 	- Be able to explain effects and provide example
 	- Be able to explain context and provide example
 	- Be able to explain portals and provide example
-2) [Deep JavaScript Foundations  - Kyle Simpson](https://frontendmasters.com/courses/deep-javascript-v3/)
+2) [Intermediate React - Brian Holt](https://frontendmasters.com/courses/intermediate-react-v2/)
+	- Be able to explain the 3 basic hooks covered and determine the difference between them - `useState`, `useEffect`, `useContext`
+	- Be able to explain code splitting
+	- Be able to explain server-side rendering
+	- Be able to add TypeScript to a project
+	- Write a test for a component
+
+3) [Deep JavaScript Foundations  - Kyle Simpson](https://frontendmasters.com/courses/deep-javascript-v3/)
 	- Write reflection for Static Typing Module
 	- Write reflection for Scope Module
 	- Write reflection for Scope & Function Expressions Module
@@ -21,7 +28,6 @@
 	- Write reflection for Closure Module
 	- Write reflection for Objects Module
 	- Write reflection for Prototype Module
-3) [Intermediate React - Brian Holt](https://frontendmasters.com/courses/intermediate-react-v2/)
 4) [JavaScript Testing Practices and Principles - Kent C Dodds](https://frontendmasters.com/courses/testing-practices-principles/)
 	- Be able to explain Static Testing
 	- Be able to explain Unit Testing
