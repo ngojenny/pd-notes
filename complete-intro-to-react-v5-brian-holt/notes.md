@@ -411,5 +411,238 @@ export default function DetailsWithErrorBoundary(props) {
 
 ```
 ## Context
+* React API, useful for when you need global application state (e.g user login info)
+* Alternative to prop drilling/Redux
+* Only use it when you have to
+* See example:
+```js
+// ThemeContext.js
+import { createContext } from "react";
+
+// here we will stick a hook - but anything can go into createContext
+// e.g. obj, func, string, etc
+// hook syntax reminder: [state, updater] (here the updater doesn't do anything
+// so it will be an empty function
+const ThemeContext = createContext(["mediumaquamarine", () => {}]);
+
+export default ThemeContext;
+
+```
+```js
+// App.js
+import React, { useState } from "react";
+import { render } from "react-dom";
+import { Router, Link } from "@reach/router";
+import SearchParams from "./SearchParams";
+import Details from "./Details";
+import ThemeContext from "./ThemeContext";
+
+const App = () => {
+  // themeHook is referring to the whole array ["mediumaquamarine", () => {}]
+  const themeHook = useState("darkblue");
+  return (
+    <ThemeContext.Provider value={themeHook}>
+      <div>
+        <header>
+          <Link to="/">Adopt Me!</Link>
+        </header>
+        <Router>
+          <SearchParams path="/" />
+          <Details path="/details/:id" />
+        </Router>
+      </div>
+    </ThemeContext.Provider>
+  );
+};
+
+render(React.createElement(App), document.getElementById("root"));
+
+```
+```js
+// SearchParams.js (hooks)
+import React, { useState, useEffect, useContext } from "react";
+import pet, { ANIMALS } from "@frontendmasters/pet";
+import Results from "./Results";
+// import custom hook
+import useDropdown from "./useDropdown";
+import ThemeContext from "./ThemeContext";
+
+const SearchParams = () => {
+  const [location, setLocation] = useState("Seattle, WA");
+  const [breeds, setBreeds] = useState([]);
+  const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
+  const [breed, BreedDropdown, setBreed] = useDropdown("Breed", "", breeds);
+  const [pets, setPets] = useState([]);
+  const [theme] = useContext(ThemeContext);
+
+  async function requestPets() {
+    const { animals } = await pet.animals({
+      location,
+      breed,
+      type: animal
+    });
+
+    setPets(animals || []);
+  }
+
+  useEffect(() => {
+    setBreeds([]);
+    setBreed("");
+
+    pet.breeds(animal).then(({ breeds }) => {
+      const breedStrings = breeds.map(({ name }) => name);
+      setBreeds(breedStrings);
+    }, console.error);
+  }, [animal, setBreed, setBreeds]);
+  return (
+    <div className="search-params">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          requestPets();
+        }}
+      >
+        <label htmlFor="location">
+          <input
+            id="location"
+            value={location}
+            placeholder="Location"
+            onChange={e => setLocation(e.target.value)}
+          />
+        </label>
+        <AnimalDropdown />
+        <BreedDropdown />
+        <button style={{ backgroundColor: theme }}>Submit</button>
+      </form>
+      <Results pets={pets} />
+    </div>
+  );
+};
+
+export default SearchParams;
+
+```
+```js
+// Details.js (class)
+...
+import ThemeContext from "./ThemeContext";
+
+class Details extends React.Component {
+  state = { loading: true };
+
+  componentDidMount() {
+    ...
+  }
+
+  render() {
+    if (this.state.loading) {
+      return <h1>loading...</h1>;
+    }
+    const { animal, breed, location, description, name, media } = this.state;
+    return (
+      <div className="details">
+        <Carousel media={media} />
+        <div>
+          <h1>{name}</h1>
+          <h2>{`${animal} - ${breed} - ${location}`}</h2>
+          // See below
+          // uses Consumer
+          // returns component (any function that returns JSX is component in React)
+          <ThemeContext.Consumer>
+            {themeHook => (
+              <button style={{ backgroundColor: themeHook[0] }}>
+                Adopt {name}
+              </button>
+            )}
+          </ThemeContext.Consumer>
+          <p>{description}</p>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default function DetailsWithErrorBoundary(props) {
+  return (
+    <ErrorBoundary>
+      <Details {...props} />
+    </ErrorBoundary>
+  );
+}
+
+```
+* Example of updating and persisting data using context:
+```js
+// Search params
+...
+import ThemeContext from "./ThemeContext";
+
+const SearchParams = () => {
+  ...
+  const [theme, setTheme] = useContext(ThemeContext);
+
+  async function requestPets() {
+    const { animals } = await pet.animals({
+      location,
+      breed,
+      type: animal
+    });
+
+    setPets(animals || []);
+  }
+
+  useEffect(() => {
+    setBreeds([]);
+    setBreed("");
+
+    pet.breeds(animal).then(({ breeds }) => {
+      const breedStrings = breeds.map(({ name }) => name);
+      setBreeds(breedStrings);
+    }, console.error);
+  }, [animal, setBreed, setBreeds]);
+  return (
+    <div className="search-params">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          requestPets();
+        }}
+      >
+        <label htmlFor="location">
+          <input
+            id="location"
+            value={location}
+            placeholder="Location"
+            onChange={e => setLocation(e.target.value)}
+          />
+        </label>
+        <AnimalDropdown />
+        <BreedDropdown />
+        // See below, setTheme is added above
+        <label htmlFor="theme">
+          Theme
+          <select
+            value={theme}
+            onChange={e => setTheme(e.target.value)}
+            onBlur={e => setTheme(e.target.value)}
+          >
+            <option value="mediumaquamarine">mediumaquamarine</option>
+            <option value="darkblue">darkblue</option>
+            <option value="tomato">tomato</option>
+          </select>
+        </label>
+        <button style={{ backgroundColor: theme }}>Submit</button>
+      </form>
+      <Results pets={pets} />
+    </div>
+  );
+};
+
+export default SearchParams;
+
+```
+* If we were just using a regular hook, once we navigate away from SearchParams, the component would unmount, destroying the hook and we would lose the current state
+
+
 ## Portals
 ## Wrapping Up
