@@ -2,11 +2,34 @@
 ## Intro
 
 ## Pure React
-* React- dom library allows us to render react to the browser
+* React-dom library allows us to render react to the browser
 * React native and React-dom share the react package, React package itself is actually quite small and just determines how to interact with react
 * Module focuses on writing Pure React, using methods like `React.createElement()` to create elements to render to the browser (3 args: elem/component, attributes/props, children/text)
-* Pros - Easy to build out UI. We can reuse and and nest component.
-* Example of Pure React Components
+* Pros - Easy to build out UI. We can reuse and and nest components.
+* Example of Pure React Components:
+```js
+const App = () => {
+  return React.createElement("div", {}, [
+    React.createElement("h1", {}, "Adopt Me!"),
+    React.createElement(Pet, {
+      name: "Luna",
+      animal: "Dog",
+      breed: "Havenese"
+    }),
+    React.createElement(Pet, {
+      name: "Pepper",
+      animal: "Bird",
+      breed: "Cockatiel"
+    }),
+    React.createElement(Pet, {
+      name: "Doink",
+      animal: "Cat",
+      breed: "Mixed"
+    })
+  ]);
+};
+
+```
 
 ## Tools
 * Goes over tooling for project
@@ -21,7 +44,7 @@
 
 ## JSX
 * allows us to write HTML markup, instead of creating our elements using `React.createElement()`
-* When you have JSX, you need to import react, because under the hood JSX transpire to `React.createElement()`
+* When you have JSX, you need to import react, because under the hood JSX transpile to `React.createElement()`
 * `npm install -D babel-eslint eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react` in “Configuring ESLint for React”
 * Expressions (anything on the right side of an assignment) needs to be wrapped in curly braces in JSX
 
@@ -286,6 +309,104 @@ export default Carousel;
 
 ```
 ## Error Boundaries
+* Cannot do error boundaries with hooks, must use class components
+* Prevents entire UI from crashing when there is an error. It’s able to catch JavaScript errors in child component, log the error and display feedback to user.
+* See [Error Boundaries – React](https://reactjs.org/docs/error-boundaries.html#introducing-error-boundaries)
+* Example:
+```js
+// ErrorBoundary.js
+import React, { Component } from "react";
+import { Link, Redirect } from "@reach/router";
+
+class ErrorBoundary extends Component {
+  state = { hasError: false, redirect: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error("ErrorBoundary caught an error", error, info);
+  }
+
+  componentDidUpdate() {
+    if (this.state.hasError) {
+      setTimeout(() => this.setState({ redirect: true }), 5000);
+    }
+  }
+  render() {
+    if (this.state.redirect) {
+      return <Redirect to="/" />;
+    }
+    if (this.state.hasError) {
+      return (
+        <h1>
+          There was an error with this listing. <Link to="/"> Click here</Link>{" "}
+          to go back to the home page or wait five seconds
+        </h1>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+
+```
+* In the example below we want to wrap Details in the error boundary in case there’s an error coming from the API. We can’t just wrap everything in `<ErrorBoundary></ErrorBoundary>` because it can only catch the error in child components, but not within the class itself. To fix this, he turns `<ErrorBoundary></ErrorBoundary>` into a higher order component above details. Not sure if this is the best way? See the way it is exported at the bottom:
+```js
+// Details.js
+import React from "react";
+import pet from "@frontendmasters/pet";
+import Carousel from "./Carousel";
+import ErrorBoundary from "./ErrorBoundary";
+
+class Details extends React.Component {
+  state = { loading: true };
+
+  componentDidMount() {
+    // uncomment next line to trigger <ErrorBoundary>
+    // throw new Error("hi");
+    pet.animal(this.props.id).then(({ animal }) => {
+      this.setState({
+        name: animal.name,
+        animal: animal.type,
+        location: `${animal.contact.address.city}, ${animal.contact.address.state}`,
+        description: animal.description,
+        media: animal.photos,
+        breed: animal.breeds.primary,
+        loading: false
+      });
+    }, console.error);
+  }
+
+  render() {
+    if (this.state.loading) {
+      return <h1>loading...</h1>;
+    }
+    const { animal, breed, location, description, name, media } = this.state;
+    return (
+      <div className="details">
+        <Carousel media={media} />
+        <div>
+          <h1>{name}</h1>
+          <h2>{`${animal} - ${breed} - ${location}`}</h2>
+          <button>Adopt {name}</button>
+          <p>{description}</p>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default function DetailsWithErrorBoundary(props) {
+  return (
+    <ErrorBoundary>
+      <Details {...props} />
+    </ErrorBoundary>
+  );
+}
+
+```
 ## Context
 ## Portals
 ## Wrapping Up
