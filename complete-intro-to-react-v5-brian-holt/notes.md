@@ -414,7 +414,9 @@ export default function DetailsWithErrorBoundary(props) {
 * React API, useful for when you need global application state (e.g user login info)
 * Alternative to prop drilling/Redux
 * Only use it when you have to
-* See example:
+
+### Steps to implement context hook(at least the way Brian showed it)
+1)  Create file and define context using `createContext` - here we passed in a hook, but it can take anything (e.g. obj, string, function, etc):
 ```js
 // ThemeContext.js
 import { createContext } from "react";
@@ -428,6 +430,7 @@ const ThemeContext = createContext(["mediumaquamarine", () => {}]);
 export default ThemeContext;
 
 ```
+2) Import the context created in your top level component. Create hook . Wrap all children in `<ThemeContext.Provider>` and pass in hook:
 ```js
 // App.js
 import React, { useState } from "react";
@@ -458,6 +461,8 @@ const App = () => {
 render(React.createElement(App), document.getElementById("root"));
 
 ```
+3) Import context in the component.  Create context hook using `useContext()`, pass in context:
+
 ```js
 // SearchParams.js (hooks)
 import React, { useState, useEffect, useContext } from "react";
@@ -522,6 +527,8 @@ const SearchParams = () => {
 export default SearchParams;
 
 ```
+4) For class based components, the syntax is a bit different. Import context. Wrap the piece of JSX in `<ThemeContext.Consumer>`:
+
 ```js
 // Details.js (class)
 ...
@@ -643,6 +650,6 @@ export default SearchParams;
 ```
 * If we were just using a regular hook, once we navigate away from SearchParams, the component would unmount, destroying the hook and we would lose the current state
 
-
 ## Portals
+
 ## Wrapping Up
