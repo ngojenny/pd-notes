@@ -790,5 +790,5 @@ export default function DetailsWithErrorBoundary(props) {
 
 ```
 
-
 ## Wrapping Up
+* 🎉
