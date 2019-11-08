@@ -84,6 +84,9 @@ export default ContextComponent;
 * `useImperativeHandle()`: Will mostly not use this - more for library authors
 
 ## CSS in JS
+* Shows how to use the `emotion.js` library to add CSS in our JS
+* Seems similar to styled-components. It keeps things modular. If we need to remove a component, the css would also be removed as well, we don’t have to figure out how to clean up the external css file
+
 ## Code Splitting
 ## Server Side Rendering
 ## TypeScript with React
