@@ -88,6 +88,20 @@ export default ContextComponent;
 * Seems similar to styled-components. It keeps things modular. If we need to remove a component, the css would also be removed as well, we don’t have to figure out how to clean up the external css file
 
 ## Code Splitting
+* defer the loading of pieces of code until it’s actually needed by the user/application
+* Uses `React.lazy()` (takes a dynamic import), which returns a Promise (resolves to a module containing a React Component) and wraps the lazy component in `<React.Suspense>`
+* Suspense will not render its children until `lazy()` resolves;
+* Code Splitting is not worth doing unless you would be splitting out something that is over 30kb (compressed js)
+*  A good use case may be code splitting child components that are importing large libraries  
+```js
+// In SearchParam.js
+import _ from "lodash";
+import moment from "moment";
+
+// In App.js
+const SearchParams = lazy(() => import("./Details");
+```
+
 ## Server Side Rendering
 ## TypeScript with React
 ## Redux
