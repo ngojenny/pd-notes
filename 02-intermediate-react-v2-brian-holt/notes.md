@@ -103,6 +103,71 @@ const SearchParams = lazy(() => import("./Details");
 ```
 
 ## Server Side Rendering
+* allows us to pre-render our App on the server, send the markup to the client, have JS load and React takes over once it is done loading
+* server side rendering to node stream: uses `renderToNodeStream()` to send pieces of markup instead of entire payload
+
 ## TypeScript with React
+* TypeScript checks for errors, related to data types, in your code
+* Provides inline documentation as you type, e.g. which properties are avail in an obj, spelling, methods on type
+* Configuring TypeScript
+  1) `npm install -D typescript`: install TypeScript
+  2) `npx tsc --init`: creates a tsconfig.json file
+  3) in tsconfig.json, change target to `es2018`, uncomment `jsx` and set its value to `react`
+  4) `npm install -D @types/react @types/react-dom @types/reach__router`: allows us to use typescript with react
+* TypeScript will not check `.js` files by default
+* Using TypeScript
+  * renaming our component files to `.tsx`
+  * example:
+Modal.js
+```js
+import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+
+const modalRoot = document.getElementById("modal");
+
+const Modal = ({ children }) => {
+  const elRef = useRef(null);
+  if (!elRef.current) {
+    elRef.current = document.createElement("div");
+  }
+
+  useEffect(() => {
+    modalRoot.appendChild(elRef.current);
+    return () => modalRoot.removeChild(elRef.current);
+  }, []);
+
+  return createPortal(<div>{children}</div>, elRef.current);
+};
+
+export default Modal;
+
+```
+Modal.tsx
+```js
+import React, { useEffect, useRef, FunctionComponent } from "react";
+import { createPortal } from "react-dom";
+
+const modalRoot = document.getElementById("modal");
+
+const Modal: FunctionComponent = ({ children }) => {
+  const elRef = useRef(document.createElement("div"));
+
+  useEffect(() => {
+    if (!modalRoot) {
+      return;
+    }
+    modalRoot.appendChild(elRef.current);
+    return () => {
+      modalRoot.removeChild(elRef.current);
+    };
+  }, []);
+
+  return createPortal(<div>{children}</div>, elRef.current);
+};
+
+export default Modal;
+
+```
+
 ## Redux
 ## Testing React
