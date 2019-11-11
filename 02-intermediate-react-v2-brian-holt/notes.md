@@ -115,6 +115,27 @@ const SearchParams = lazy(() => import("./Details");
   3) in tsconfig.json, change target to `es2018`, uncomment `jsx` and set its value to `react`
   4) `npm install -D @types/react @types/react-dom @types/reach__router`: allows us to use typescript with react
 * TypeScript will not check `.js` files by default
+* Setting up tslint (tslint will eventually migrate over to eslint). Course shows how to take out eslint and replace it was tslint:
+  1) `npm uninstall eslint babel-eslint eslint-config-prettier eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks`
+  2) `npm install -D tslint tslint-react tslint-config-prettier`
+  3) `remove .eslintrc.json`
+  4) in `package.json` change `scripts.lint`’s value to `tslint --project`
+  5) create `tslint.json` and add:
+```json
+{
+"extends":["tslint:recommended","tslint-react","tslint-config-prettier"],
+  "rules":{
+    "ordered-imports":false,
+    "object-literal-sort-keys":false,
+    "no-console":false,
+    "jsx-no-lambda":false,
+    "member-ordering":false
+  }
+}
+```
+6) install tslint extension for VScode
+
+* you can hold `cmd` and click on methods to get tslint documentation on it
 * Using TypeScript
   * renaming our component files to `.tsx`
   * example:
@@ -168,6 +189,212 @@ const Modal: FunctionComponent = ({ children }) => {
 export default Modal;
 
 ```
+ThemeContext.js
+```js
+import { createContext } from "react";
+
+const ThemeContext = createContext(["green", () => {}]);
+
+export default ThemeContext;
+
+```
+ThemeContext.tsx
+```js
+import { createContext } from "react";
+
+// providing a type paramenter, returns nothing so we type void
+// telling createContext, what we're going to give it - a string and function
+const ThemeContext = createContext<[string, (theme: string) => void]>([
+  "green",
+  () => {}
+]);
+
+export default ThaemeContext;
+
+```
+
+Details.js
+```js
+class Details extends React.Component {
+  state = { loading: true, showModal: false };
+  componentDidMount() {
+    pet
+      .animal(this.props.id)
+      .then(({ animal }) => {
+        this.setState({
+          name: animal.name,
+          animal: animal.type,
+          location: `${animal.contact.address.city}, ${
+            animal.contact.address.state
+          }`,
+          description: animal.description,
+          media: animal.photos,
+          breed: animal.breeds.primary,
+          url: animal.url,
+          loading: false
+        });
+      })
+      .catch(err => this.setState({ error: err }));
+  }
+  toggleModal = () => this.setState({ showModal: !this.state.showModal });
+  adopt = () => navigate(this.state.url);
+  render() {
+    if (this.state.loading) {
+      return <h1>loading … </h1>;
+    }
+
+    const {
+      animal,
+      breed,
+      location,
+      description,
+      media,
+      name,
+      showModal
+    } = this.state;
+
+    return (
+      <div className="details">
+        <Carousel media={media} />
+        <div>
+          <h1>{name}</h1>
+          <h2>{`${animal} — ${breed} — ${location}`}</h2>
+          <ThemeContext.Consumer>
+            {([theme]) => (
+              <button
+                style={{ backgroundColor: theme }}
+                onClick={this.toggleModal}
+              >
+                Adopt {name}
+              </button>
+            )}
+          </ThemeContext.Consumer>
+          <p>{description}</p>
+          {showModal ? (
+            <Modal>
+              <h1>Would you like to adopt {name}?</h1>
+              <div className="buttons">
+                <button onClick={this.adopt}>Yes</button>
+                <button onClick={this.toggleModal}>No</button>
+              </div>
+            </Modal>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default function DetailsErrorBoundary(props) {
+  return (
+    <ErrorBoundary>
+      <Details {...props} />
+    </ErrorBoundary>
+  );
+}
+
+```
+
+Details.tsx
+```js
+class Details extends React.Component<RouteComponentProps<{ id: string }>> {
+  public state = {
+    loading: true,
+    showModal: false,
+    name: "",
+    animal: "",
+    location: "",
+    description: "",
+    media: [] as Photo[],
+    url: "",
+    breed: ""
+  };
+  public componentDidMount() {
+    if (!this.props.id) {
+      navigate("/");
+      return;
+    }
+    pet
+      .animal(+this.props.id)
+      .then(({ animal }) => {
+        this.setState({
+          name: animal.name,
+          animal: animal.type,
+          location: `${animal.contact.address.city}, ${
+            animal.contact.address.state
+          }`,
+          description: animal.description,
+          media: animal.photos,
+          breed: animal.breeds.primary,
+          url: animal.url,
+          loading: false
+        });
+      })
+      .catch((err: Error) => this.setState({ error: err }));
+  }
+  public toggleModal = () =>
+    this.setState({ showModal: !this.state.showModal });
+  public adopt = () => navigate(this.state.url);
+  public render() {
+    if (this.state.loading) {
+      return <h1>loading … </h1>;
+    }
+
+    const {
+      animal,
+      breed,
+      location,
+      description,
+      media,
+      name,
+      showModal
+    } = this.state;
+
+    return (
+      <div className="details">
+        <Carousel media={media} />
+        <div>
+          <h1>{name}</h1>
+          <h2>{`${animal} — ${breed} — ${location}`}</h2>
+          <ThemeContext.Consumer>
+            {([theme]) => (
+              <button
+                style={{ backgroundColor: theme }}
+                onClick={this.toggleModal}
+              >
+                Adopt {name}
+              </button>
+            )}
+          </ThemeContext.Consumer>
+          <p>{description}</p>
+          {showModal ? (
+            <Modal>
+              <h1>Would you like to adopt {name}?</h1>
+              <div className="buttons">
+                <button onClick={this.adopt}>Yes</button>
+                <button onClick={this.toggleModal}>No</button>
+              </div>
+            </Modal>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default function DetailsErrorBoundary(
+  props: RouteComponentProps<{ id: string }>
+) {
+  return (
+    <ErrorBoundary>
+      <Details {...props} />
+    </ErrorBoundary>
+  );
+}
+
+```
+* For more examples see: [complete-intro-to-react-v5/src at typescript · btholt/complete-intro-to-react-v5 · GitHub](https://github.com/btholt/complete-intro-to-react-v5/tree/typescript/src)
+
 
 ## Redux
 ## Testing React
