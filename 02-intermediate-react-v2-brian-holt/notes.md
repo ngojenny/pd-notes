@@ -406,3 +406,57 @@ export default function DetailsErrorBoundary(
 * reducers determine how the state changes (state values). They should be pure functions.
 
 ## Testing React
+* `npm install -D jest react-testing-library`
+* create a `src/__test__` directory
+* example tests `SearchParams.js`, because this component makes an axios call, we will want to create mocks. This lets us avoid calling the API every time we run our test
+* in the root directory create  `__mocks__/frontendmasters/pet.js`
+```js
+import { readFileSync } from "fs";
+import path from "path";
+import { act } from "@testing-library/react";
+
+const breeds = [
+  { name: "Bichon Frise" },
+  { name: "Bolognese" },
+  { name: "Coton de Tulear" },
+  { name: "Havanese" },
+  { name: "Maltese" }
+];
+
+//make sure that you are getting the file from the right directory
+const doggos = JSON.parse(
+  readFileSync(path.join(__dirname, "/res.json")).toString()
+);
+
+export const ANIMALS = ["dogs", "cat", "bird"];
+export const _breeds = breeds;
+export const _dogs = doggos.animals;
+
+// creating a mock library of pet, it will be an object that looks and acts like the api
+// jest.fn() is a "spy" function, we'll check to see if this gets called
+// mock.breeds will return a promise-like obj
+const mock = {
+  breeds: jest.fn(() => {
+    return {
+      then: callback => act(() => callback({ breeds }))
+    };
+  }),
+  animals: jest.fn(() => {
+    return {
+      then: callback => act(() => callback(doggos))
+    };
+  })
+};
+
+export default mock;
+
+```
+* add `data-testid={id}` to `select` in `useDropdown.js`
+* change test in package.json to:
+```json
+"test":"jest"
+```
+* jest will figure out the rest
+* *currently cannot use `async` and `await` and test
+* `npm run test -- -u` to update snapshot
+* see [complete-intro-to-react-v5/src/__tests__ at testing · btholt/complete-intro-to-react-v5 · GitHub](https://github.com/btholt/complete-intro-to-react-v5/tree/testing/src/__tests__) for rest of tests
