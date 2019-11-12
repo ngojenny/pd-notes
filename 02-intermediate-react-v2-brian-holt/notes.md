@@ -396,7 +396,13 @@ export default function DetailsErrorBoundary(
 * For more examples see: [complete-intro-to-react-v5/src at typescript · btholt/complete-intro-to-react-v5 · GitHub](https://github.com/btholt/complete-intro-to-react-v5/tree/typescript/src)
 
 ## Redux
-
-
+* A state management library. Another way to manage global application state.
+* Context API has reduced the need for redux
+* Still might be some good use cases (e.g. A project with a lot of async actions, like calling many APIs and the data has to come back in a particular order, Redux saga might be helpful )
+* `npm i redux react-redux` 
+* `store`holds state
+* Entire app is wrapped in `<Provider>`, our app will re-render whenever the store changes
+* to update a piece of global state, we would need to dispatch an action via helper functions/action creators 
+* reducers determine how the state changes (state values). They should be pure functions.
 
 ## Testing React
