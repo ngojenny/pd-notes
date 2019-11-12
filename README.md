@@ -6,6 +6,7 @@
 2) Have a foundational knowledge of testing
 3) Be able to explain the difference between various types of testing (Static, Unit, Integration, Snapshot, etc)
 4) Be more confident in more Advanced JavaScript concepts
+5) Be able to build a small vue project independently
 
 ### Specific Course Goals
 *November 1, 2019*
@@ -28,7 +29,9 @@
 	- Be able to add TypeScript to a project
 	- Write a test for a component
 
-3) [Deep JavaScript Foundations  - Kyle Simpson](https://frontendmasters.com/courses/deep-javascript-v3/)
+3) [Introduction to Vue - Sarah Drasner](https://frontendmasters.com/courses/vue/)
+
+4) [Deep JavaScript Foundations  - Kyle Simpson](https://frontendmasters.com/courses/deep-javascript-v3/)
 	- Write reflection for Static Typing Module
 	- Write reflection for Scope Module
 	- Write reflection for Scope & Function Expressions Module
@@ -36,7 +39,7 @@
 	- Write reflection for Closure Module
 	- Write reflection for Objects Module
 	- Write reflection for Prototype Module
-4) [JavaScript Testing Practices and Principles - Kent C Dodds](https://frontendmasters.com/courses/testing-practices-principles/)
+5) [JavaScript Testing Practices and Principles - Kent C Dodds](https://frontendmasters.com/courses/testing-practices-principles/)
 	- Be able to explain Static Testing
 	- Be able to explain Unit Testing
 	- Be able to explain Integration Testing
